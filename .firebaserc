@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "lolstats-71e8d"
+  },
+  "targets": {
+    "lolstats-71e8d": {
+      "hosting": {
+        "persos": [
+          "lolstats-71e8d"
+        ]
+      }
+    }
+  }
+}

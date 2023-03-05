@@ -1,0 +1,32 @@
+<div class="login" *ngIf="!usuerStatus">
+        <div class="auth" >
+            <h3>Sign in to lolstats</h3>
+            <form [formGroup]="form" class="form">
+                    <input  [ngClass]="form.controls.userName.valid === false ? 'input' : 'input valid'" formControlName="userName" type="text texto-izquierda" placeholder="User">
+                    <input  [ngClass]="form.controls.password.valid === false ? 'input' : 'input valid'" formControlName="password" type="password" placeholder="Password">
+                    <button id="email-auth-container" [disabled]="!form.valid" class="btn " (click)="login()">
+                        <span>Login</span>
+                    </button>
+            </form>
+            <span>OR</span>
+            <div class="auth-types">
+                <div class="google" id="firebaseui-auth-container">
+                    <!-- <div style="display: none;" *ngIf="!usuerStatus"></div> -->
+                </div>
+                <!-- <div class="google">
+
+                </div>
+                <div class="google">
+                
+                </div> -->
+            </div>
+       </div> 
+</div>
+
+<div *ngIf="usuerStatus" class="nav">
+    <ul *ngFor="let item of menu">
+        <li><a routerLink="{{item.route}}">{{item.name}}</a></li>
+    </ul>
+</div>
+
+<router-outlet class="container"></router-outlet>
