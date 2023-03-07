@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import * as firebaseui from 'firebaseui';
-import {Auth} from "@angular/fire/auth";
+import { Auth } from "@angular/fire/auth";
 import firebase from "firebase/compat/app";
-import {firstValueFrom, Subscription} from "rxjs"
+import { firstValueFrom, Subscription } from "rxjs"
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -12,34 +13,36 @@ import { FormBuilder, Validators } from '@angular/forms';
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent implements OnInit, OnDestroy{
+export class AppComponent implements OnInit, OnDestroy {
   private readonly ui: firebaseui.auth.AuthUI;
   private userServiceSubscription: Subscription | undefined;
+  menu = [
+    { name: 'last games', route: '/games', icon: 'assignment_ind' },
+    { name: 'ranking', route: '', icon: 'card_travel' },
+    { name: 'add game', route: '/add', icon: 'sentiment_very_satisfied'},
+    { name: 'profile', route: '/profile', icon: 'sentiment_very_satisfied'},
+  ];
   usuerStatus!: Boolean;
-
+  isSingUp: Boolean = false;
   form = this.fb.group({
     userName: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   })
-  
-  passwordValid: any[] = [
-    {value: this.form.controls.password.valid, name: "password"},
-    {value: this.form.controls.userName.valid, name: "userName"},
-  ];
 
   constructor(
     public auth: Auth,
     private authService: AuthService,
-    private fb: FormBuilder
-    ) {
-      this.isLogin();
-      this.ui = new firebaseui.auth.AuthUI(auth);
+    private fb: FormBuilder,
+    private router: Router,
+  ) {
+    this.isLogin();
+    this.ui = new firebaseui.auth.AuthUI(auth);
   }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     const uiConfig: firebaseui.auth.Config = {
       signInFlow: 'popup',
-      signInSuccessUrl: '/games',
+      signInSuccessUrl: '/',
       signInOptions: [
         {
           provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -51,46 +54,48 @@ export class AppComponent implements OnInit, OnDestroy{
     };
     this.ui.disableAutoSignIn();
     this.ui.start('#firebaseui-auth-container', uiConfig);
-
-    
-    const uiFirebaseConfig: firebaseui.auth.Config = {
-      signInSuccessUrl: '/games',
-      signInOptions: [
-        {
-          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-          authMethod: "",
-
-        },
-      ],
-      credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
-    };
-   /*  this.ui.disableAutoSignIn();
-    this.ui.start('#email-auth-container', uiFirebaseConfig); */
   }
 
-  login(){
-    console.log("hola");
-    
+  isLoginInterface(value: string) {
+    if (value === "login") {
+      window.location.replace("http://localhost:4200/");
+    } else {
+      this.isSingUp = true;
+    }
+  }
+
+  async login() {
+    if (this.form.value.userName && this.form.value.password) {
+      const credentials = await this.authService.signInEmailAndPassword(this.form.value.userName, this.form.value.password);
+      if (typeof credentials === 'object') {
+        this.usuerStatus = true;
+        this.authService.setCurrentUser(true);
+        this.router.navigate(['/']);
+      }
+    }
+  }
+
+  async signUp() {
+    if (this.form.value.userName && this.form.value.password) {
+      const credentials = await this.authService.loginEmail(this.form.value.userName, this.form.value.password);
+      if (typeof credentials === 'object')
+        this.usuerStatus = true;
+      this.authService.setCurrentUser(true);
+      this.router.navigate(['/']);
+    }
   }
 
   async isLogin() {
     const isLogin = await firstValueFrom(this.authService.uid);
-    if(isLogin){
+    if (isLogin) {
       this.authService.setCurrentUser(isLogin);
       this.userServiceSubscription = this.authService.currentUser.subscribe(currentUser => {
-        this.usuerStatus = currentUser;  
-      });  
-    } 
+        this.usuerStatus = currentUser;
+      });
+    }
   }
   ngOnDestroy(): void {
     this.userServiceSubscription?.unsubscribe();
     this.ui.delete().then();
   }
-
-  menu = [
-    { name: 'last games', route: '/games', icon: 'assignment_ind' },
-    {name: 'ranking', route: '', icon: 'card_travel'},
-    { name: 'add game', route: '/add', icon: 'sentiment_very_satisfied' },
-  ];
-
 }

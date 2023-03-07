@@ -6,16 +6,7 @@ const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['']);
 
 const routes: Routes = [
-  {
-    ...canActivate(redirectUnauthorizedToLogin),
-    path: 'games',
-    loadChildren: () => import('./pages/last-games-page/last-games-page.module').then(m => m.LastGamesPageModule)
-  },
-  {
-    ...canActivate(redirectUnauthorizedToLogin),
-    path: 'add',
-    loadChildren: () => import('./pages/add-stats-page/add-stats-page.module').then(m => m.AddStatsPageModule)
-  },
+
 ];
 
 @NgModule({

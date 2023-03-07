@@ -5,8 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {provideAuth, getAuth, connectAuthEmulator} from '@angular/fire/auth';
-import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
+import {provideAuth, getAuth} from '@angular/fire/auth';
+import {provideFunctions, getFunctions} from '@angular/fire/functions';
 
 
 import { provideFirestore,getFirestore } from '@angular/fire/firestore';

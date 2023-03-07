@@ -1,24 +1,38 @@
 <div class="login" *ngIf="!usuerStatus">
         <div class="auth" >
-            <h3>Sign in to lolstats</h3>
-            <form [formGroup]="form" class="form">
-                    <input  [ngClass]="form.controls.userName.valid === false ? 'input' : 'input valid'" formControlName="userName" type="text texto-izquierda" placeholder="User">
-                    <input  [ngClass]="form.controls.password.valid === false ? 'input' : 'input valid'" formControlName="password" type="password" placeholder="Password">
-                    <button id="email-auth-container" [disabled]="!form.valid" class="btn " (click)="login()">
-                        <span>Login</span>
+            <div *ngIf="!isSingUp" style="display: flex; flex-direction: column;  align-items: center; ">
+                <h3>Sign in to lolstats</h3>
+                <form [formGroup]="form" class="form">
+                        <input [ngClass]="form.controls.userName.valid === false ? 'input' : 'input valid'" formControlName="userName" type="text texto-izquierda" placeholder="User">
+                        <input [ngClass]="form.controls.password.valid === false ? 'input' : 'input valid'" formControlName="password" type="password" placeholder="Password">
+                        <button id="email-auth-container" [disabled]="!form.valid" class="btn " (click)="login()">
+                            <span>Login</span>
+                        </button>
+                </form>
+                <span>OR</span>
+                <div class="auth-types">
+                    <div class="google" id="firebaseui-auth-container">
+                        <!-- <div style="display: none;" *ngIf="!usuerStatus"></div> -->
+                    </div>
+                    <!-- <div class="google">
+    
+                    </div>
+                    <div class="google">
+                    
+                    </div> -->
+                </div>
+                <p style="margin-top: 2em;">If havent account click <span (click)="isLoginInterface('signUp')">here</span></p>
+            </div>
+            <div *ngIf="isSingUp" style="display: flex; flex-direction: column;  align-items: center; ">
+                <h3 style="text-align: center;">Registrer Now</h3>
+                <form [formGroup]="form" class="form">
+                    <input [ngClass]="form.controls.userName.valid === false ? 'input' : 'input valid'" formControlName="userName" type="text texto-izquierda" placeholder="User">
+                    <input [ngClass]="form.controls.password.valid === false ? 'input' : 'input valid'" formControlName="password" type="password" placeholder="Password">
+                    <button id="email-auth-container" [disabled]="!form.valid" class="btn " (click)="signUp()">
+                        <span>Sign Up</span>
                     </button>
             </form>
-            <span>OR</span>
-            <div class="auth-types">
-                <div class="google" id="firebaseui-auth-container">
-                    <!-- <div style="display: none;" *ngIf="!usuerStatus"></div> -->
-                </div>
-                <!-- <div class="google">
-
-                </div>
-                <div class="google">
-                
-                </div> -->
+            <p style="margin-top: 2em;">Already registred? Click <span (click)="isLoginInterface('login')">here</span></p>
             </div>
        </div> 
 </div>
