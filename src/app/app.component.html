@@ -37,10 +37,33 @@
        </div> 
 </div>
 
-<div *ngIf="usuerStatus" class="nav">
+<!-- <div *ngIf="usuerStatus" class="nav">
     <ul *ngFor="let item of menu">
         <li><a routerLink="{{item.route}}">{{item.name}}</a></li>
     </ul>
-</div>
+</div> -->
+
+<nav class="navbar">
+    <div class="navbar-box">
+        <div class="nav-img">
+            <img routerLink="/" width="150px" height="auto" src="../assets/img/logo.png" alt="">
+        </div>
+        <div class="nav-links">
+            <ul>
+                <li routerLink="/">Inicio</li>
+                <li routerLink="/">Ranking</li>
+                <li routerLink="/">Games</li>
+            </ul>
+        </div>
+        <div class="nav-avatar" *ngIf="user$ | async as user"  [matMenuTriggerFor]="profileMenu">
+            <img class="avatar" title="{{user.displayName}}" src="{{user.photoURL}}" alt="">
+        </div>
+        <mat-menu #profileMenu>
+            <div class="profile-container">
+                <button class="button-profile" (click)="signOut()">Salir</button>
+            </div>
+        </mat-menu>
+    </div>
+</nav>
 
 <router-outlet class="container"></router-outlet>

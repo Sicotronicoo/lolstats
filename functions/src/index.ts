@@ -15,3 +15,8 @@ export const createAuthUser = functions.region("europe-west1")
       photoURL: user.photoURL,
     }).catch(functions.logger.error)
   );
+
+export const deleteAuthUser = functions.region("europe-west1")
+  .auth.user()
+  .onDelete((user) =>
+    db.deleteDoc("users/" + user.uid).catch(functions.logger.error));

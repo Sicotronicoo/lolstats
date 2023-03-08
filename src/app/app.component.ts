@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class AppComponent implements OnInit, OnDestroy {
   private readonly ui: firebaseui.auth.AuthUI;
   private userServiceSubscription: Subscription | undefined;
+  user$ = this.authService.user;
   menu = [
     { name: 'last games', route: '/games', icon: 'assignment_ind' },
     { name: 'ranking', route: '', icon: 'card_travel' },
@@ -42,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const uiConfig: firebaseui.auth.Config = {
       signInFlow: 'popup',
-      signInSuccessUrl: '/',
+      signInSuccessUrl: '/profile',
       signInOptions: [
         {
           provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -70,7 +71,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (typeof credentials === 'object') {
         this.usuerStatus = true;
         this.authService.setCurrentUser(true);
-        this.router.navigate(['/']);
+        this.router.navigate(['/profile']);
       }
     }
   }
@@ -81,7 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (typeof credentials === 'object')
         this.usuerStatus = true;
       this.authService.setCurrentUser(true);
-      this.router.navigate(['/']);
+      this.router.navigate(['/profile']);
     }
   }
 
@@ -94,6 +95,12 @@ export class AppComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  signOut() {
+    this.authService.setCurrentUser(false);
+    return this.authService.signOut();
+  }
+
   ngOnDestroy(): void {
     this.userServiceSubscription?.unsubscribe();
     this.ui.delete().then();

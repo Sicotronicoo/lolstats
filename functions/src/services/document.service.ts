@@ -16,3 +16,5 @@ export const setDoc = async (path: string, data: firestore.DocumentData): Promis
 
   return await db.collection(path).doc(data.id).set(dbData);
 };
+
+export const deleteDoc = (path: string): Promise<firestore.WriteResult> => db.doc(path).delete();
