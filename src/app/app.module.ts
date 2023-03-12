@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {provideAuth, getAuth} from '@angular/fire/auth';
-import {provideFunctions, getFunctions} from '@angular/fire/functions';
+import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
 
 
 import { provideFirestore,getFirestore } from '@angular/fire/firestore';
@@ -59,9 +59,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     provideFunctions(() => {
       const Functions = getFunctions()
 
-      /* if (!environment.production) {
+      if (!environment.production) {
         connectFunctionsEmulator(Functions, 'localhost', 5001)
-      } */
+      }
 
       return Functions
     }),

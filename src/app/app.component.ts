@@ -18,10 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private userServiceSubscription: Subscription | undefined;
   user$ = this.authService.user;
   menu = [
-    { name: 'last games', route: '/games', icon: 'assignment_ind' },
-    { name: 'ranking', route: '', icon: 'card_travel' },
-    { name: 'add game', route: '/add', icon: 'sentiment_very_satisfied'},
-    { name: 'profile', route: '/profile', icon: 'sentiment_very_satisfied'},
+    { name: 'Add Game', route: 'add', icon: 'card_travel' },
   ];
   usuerStatus!: Boolean;
   isSingUp: Boolean = false;

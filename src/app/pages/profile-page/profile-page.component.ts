@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import { httpsCallableData, Functions } from '@angular/fire/functions';
+import { FormBuilder, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ApiLolService } from 'src/app/services/api-lol.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
 
-const KEY = "RGAPI-e15effc1-4181-4928-9863-694e370fff9f";
 
 @Component({
   selector: 'app-profile-page',
@@ -11,18 +14,27 @@ const KEY = "RGAPI-e15effc1-4181-4928-9863-694e370fff9f";
 })
 export class ProfilePageComponent {
   // https://ddragon.leagueoflegends.com/cdn/13.4.1/data/en_US/profileicon.json
-  // https://ddragon.leagueoflegends.com/cdn/13.4.1/img/profileicon/588.png
+  // https://ddragon.leagueoflegends.com/cdn/13.4.1/img/profileicon/20.png
+
+  seIdConfirmation = httpsCallableData<any, any>(this.functions, 'setConfirmationLol');
 
   constructor(
-    private lolService: ApiLolService
+    private lolService: ApiLolService,
+    private userService: UserService,
+    private auth: AuthService,
+    private functions: Functions,
+    private fb: FormBuilder
   ) {
   }
 
-  async test() {
-    const player = await firstValueFrom(this.lolService.getPuuidPlayer("flash inminente", KEY));
-    console.log(player);
-    const test = await firstValueFrom(this.lolService.test());
-    console.log(test);
+  form = this.fb.group({
+    summonerName: ['', [Validators.required]],
+  });
+
+  async setConfirmationIdLol() {
+    const user = await firstValueFrom(this.auth.user);    
+    // await firstValueFrom(this.seIdConfirmation({idUser: "14304b67-373e-49c3-9efa-c3c4e244e9ed", summonerName: "flash inminente"}));
   }
+
 
 }

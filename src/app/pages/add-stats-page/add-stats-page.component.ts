@@ -40,7 +40,7 @@ export class AddStatsPageComponent {
     // 6285670770 game personalizada 
     // 6293521707
     if (this.form.value.gameId) {
-      const dataGame = await firstValueFrom(this.apiLol.getGameStats(`EUW1_6293521707`, "RGAPI-edbc03ed-694b-44b3-9170-32675ae6f84f")); 
+      const dataGame = await firstValueFrom(this.apiLol.getGameStats(`EUW1_6293521707`)); 
       console.log(dataGame);
       const exists = await this.apiLol.gameExists(this.form.value.gameId);
       if(!exists){

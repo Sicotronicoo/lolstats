@@ -9,6 +9,9 @@ import { Player } from '../interfaces/player';
 import { DocumentService } from './document.service';
 
 
+const KEY = "RGAPI-ab0ac873-4259-4037-9c47-088dcd3ea520";
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -50,9 +53,9 @@ export class ApiLolService {
     return this.documentService.profileExists("games", "gameId", idGame);
   }
 
-  getPuuidPlayer(summonerName: string, key: string) {
+  getPuuidPlayer(summonerName: string) {
     return this.http.get<any>(
-      `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName.replaceAll(" ", "%20")}?api_key=${key}`, {
+      `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName.replaceAll(" ", "%20")}?api_key=${KEY}`, {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }
@@ -70,18 +73,18 @@ export class ApiLolService {
   }
 
 
-  getGameStats(idGame: string, key: string) {
+  getGameStats(idGame: string) {
     return this.http.get<any>(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/${idGame}?api_key=${key}`, {
+      `https://europe.api.riotgames.com/lol/match/v5/matches/${idGame}?api_key=${KEY}`, {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }
     }).pipe(retry(1), catchError(this.handleError));
   }
 
-  getListGameIds(puuid: string, key: string) {
+  getListGameIds(puuid: string) {
     return this.http.get(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${key}`, {
+      `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${KEY}`, {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }
