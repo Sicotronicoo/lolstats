@@ -23,12 +23,22 @@ export const generateId = () => {
 };
 
 export const updateDoc = async (path: string, data: firestore.DocumentData): Promise<firestore.WriteResult> => {
+  console.log(data);
   const dbData = {
     ...data,
     updatedAt: FieldValue.serverTimestamp(),
   };
 
   return await db.collection(path).doc(data.id).update(dbData);
+};
+
+export const createSubcollection = async (path: string, idUser: string, data: firestore.DocumentData): Promise<firestore.DocumentReference<firestore.DocumentData>> => {
+  const dbData = {
+    ...data,
+    updatedAt: FieldValue.serverTimestamp(),
+  };
+
+  return await db.collection(path).doc(idUser).collection("accounts").add(dbData);
 };
 
 export const deleteField = async (path: string, id: string, field: string) => {

@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
-import { httpsCallableData, Functions } from '@angular/fire/functions';
 import { FormBuilder, Validators } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
-import { ApiLolService } from 'src/app/services/api-lol.service';
-import { AuthService } from 'src/app/services/auth.service';
-import { UserService } from 'src/app/services/user.service';
-
+import { Functions, httpsCallableFromURL } from '@angular/fire/functions';
 
 @Component({
   selector: 'app-profile-page',
@@ -14,27 +9,37 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class ProfilePageComponent {
   // https://ddragon.leagueoflegends.com/cdn/13.4.1/data/en_US/profileicon.json
-  // https://ddragon.leagueoflegends.com/cdn/13.4.1/img/profileicon/20.png
+  // https://ddragon.leagueoflegends.com/cdn/13.4.1/img/profileicon/21.png
 
-  seIdConfirmation = httpsCallableData<any, any>(this.functions, 'setConfirmationLol');
+
+  setIdConfirmationLol = httpsCallableFromURL<any, any>(this.functions, 'https://europe-west1-lolstats-71e8d.cloudfunctions.net/setIdConfirmationLol');
+  confirmIdImgLol = httpsCallableFromURL<any, any>(this.functions, 'https://europe-west1-lolstats-71e8d.cloudfunctions.net/confirmIdImgLol');
+
+  idImgConfirmation: any;
+
 
   constructor(
-    private lolService: ApiLolService,
-    private userService: UserService,
-    private auth: AuthService,
-    private functions: Functions,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private functions: Functions
   ) {
   }
+  ///     // console.log(`http://ddragon.leagueoflegends.com/cdn/13.5.1/img/profileicon/${idLolVerification}.png`);
 
   form = this.fb.group({
-    summonerName: ['', [Validators.required]],
+    summonerName: ['flash inminente', [Validators.required]],
   });
 
-  async setConfirmationIdLol() {
-    const user = await firstValueFrom(this.auth.user);    
-    // await firstValueFrom(this.seIdConfirmation({idUser: "14304b67-373e-49c3-9efa-c3c4e244e9ed", summonerName: "flash inminente"}));
+  async setIdImgConfirmationLol() {
+    const idImg = await this.setIdConfirmationLol({idUser: "hwxbYFaO7eYn6PVPhyg7GEiF7VF3", summonerName: "sico the tronico"});
+    this.idImgConfirmation = idImg.data
+    console.log(idImg.data);
   }
 
+  async confirmIdImgLolVerification() {    
+    console.log(this.idImgConfirmation);
+        
+    const test = await this.confirmIdImgLol({summonerName: "sico the tronico", userId: "hwxbYFaO7eYn6PVPhyg7GEiF7VF3", idImg: this.idImgConfirmation})
+    console.log(test.data);
+  }
 
 }

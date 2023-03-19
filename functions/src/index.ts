@@ -2,7 +2,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as db from "./services/document.service";
-import {confirmIdImgVerification, createIdImgVerification} from "./services/user.service";
+import {confirmIdImgLolVerification, createIdImgVerification} from "./services/user.service";
 
 admin.initializeApp();
 
@@ -31,13 +31,11 @@ export const setIdConfirmationLol = functions.region("europe-west1")
         functions.logger.error("no token for user");
         throw new functions.https.HttpsError("failed-precondition", "no token for user");
       } */
-      // setIdConfirmationLol({idUser: "tjF1V5kP9FXPJG43ux5TAWxSW7x1", summonerName: "flash inminente"},"")
-      console.log(data.summonerName, data.idUser);
-      await createIdImgVerification(data.summonerName, data.idUser);
-      return;
+      // setIdConfirmationLol({idUser: "hwxbYFaO7eYn6PVPhyg7GEiF7VF3", summonerName: "sico the tronico"},"")
+      return await createIdImgVerification(data.summonerName, data.idUser);
     } catch (e) {
       functions.logger.error(e);
-      return;
+      return e;
     }
   });
 
@@ -48,9 +46,18 @@ export const confirmIdImgLol = functions.region("europe-west1")
         functions.logger.error("no token for user");
         throw new functions.https.HttpsError("failed-precondition", "no token for user");
       } */
-      // confirmIdImgLol({summonerName: "flash inminente", userId: "tjF1V5kP9FXPJG43ux5TAWxSW7x1", idImg: "20"}, "")
-      const idImg = await confirmIdImgVerification(data.summonerName, data.idImg, data.userId);
-      console.log(idImg);
+      // confirmIdImgLol({summonerName: "sico the tronico", userId: "hwxbYFaO7eYn6PVPhyg7GEiF7VF3", idImg: "25"}, "")
+      return await confirmIdImgLolVerification(data.summonerName, data.idImg, data.userId);
+    } catch (e:any) {
+      functions.logger.error(e);
+      return e;
+    }
+  });
+
+export const test = functions.region("europe-west1")
+  .https.onCall(async (data, context) => {
+    try {
+      functions.logger.info(data, "LLEGO");
       return;
     } catch (e) {
       functions.logger.error(e);

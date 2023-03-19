@@ -8,13 +8,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {provideAuth, getAuth} from '@angular/fire/auth';
 import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
 
-
-import { provideFirestore,getFirestore } from '@angular/fire/firestore';
+import { provideFirestore,getFirestore, connectFirestoreEmulator } from '@angular/fire/firestore';
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideStorage,getStorage } from '@angular/fire/storage';
 import { AuthService } from './services/auth.service';
-import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +22,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { connectAuthEmulator } from 'firebase/auth';
 
 @NgModule({
   declarations: [
@@ -36,7 +35,6 @@ import { ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     MatSidenavModule,
     MatToolbarModule,
@@ -45,22 +43,31 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatIconModule,
     MatSnackBarModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
+    provideFirestore(() => {
+      const Firestore = getFirestore()
+
+      if (!environment.production) {
+        // connectFirestoreEmulator(Firestore, 'localhost', 8080)
+      }
+
+      return Firestore
+    }),    
     provideStorage(() => getStorage()),
     provideAuth(() => {
       const auth = getAuth();
 
-     /*  if (!environment.production) {
-        connectAuthEmulator(auth, 'http://localhost:9099')
-      } */
+      if (!environment.production) {
+        // connectAuthEmulator(auth, 'http://localhost:9099')
+      }
 
       return auth
     }),
     provideFunctions(() => {
-      const Functions = getFunctions()
+      const Functions = getFunctions();
+      Functions.region = 'europe-west1';
 
       if (!environment.production) {
-        connectFunctionsEmulator(Functions, 'localhost', 5001)
+        // connectFunctionsEmulator(Functions, 'localhost', 5001)
       }
 
       return Functions
