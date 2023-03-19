@@ -1,2 +1,26 @@
-<p (click)="setIdImgConfirmationLol()">profile-page works!</p>
+<div class="container">
+    <section class="accounts">
+        <h3>GAME ACCOUNTS</h3>
+        <div class="add-account">
+            <button *ngIf="!formNewAccount" class="btn" (click)="isFormActive()">
+                ADD ACCOUNT
+            </button>
+            <form *ngIf="formNewAccount && !urlImg" [formGroup]="form">
+                <input formControlName="summonerName" type="text texto-izquierda" placeholder="User">
+                <button *ngIf="formNewAccount" class="btn" (click)="setIdImgConfirmationLol()">
+                    START VERIFICATION
+                </button>
+            </form>
+            <div  *ngIf="urlImg !== ''">
+                <img height="80px" [src]="urlImg" alt="">
+                <button class="btn" (click)="confirmIdImgLolVerification()">
+                    ALREADY
+                </button>
+            </div>
+            
+        </div>
+    </section>
+<!-- <p (click)="setIdImgConfirmationLol()">profile-page works!</p>
 <p (click)="confirmIdImgLolVerification()">Confirm account</p>
+<img *ngIf="idImgConfirmation !== ''" [src]="idImgConfirmation" alt=""> -->
+</div>

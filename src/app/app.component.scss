@@ -96,12 +96,13 @@
   justify-content: center;
   max-width: 1920px;
   height: 80px;
-  padding: 1em;
+  margin-top: 1em;
 }
 
 .navbar-box {
   display: flex;
   width: 90%;
+  justify-content: center;
 }
 
 .nav-img{
@@ -125,9 +126,11 @@
 
 .nav-avatar {
   display: flex;
-  align-items: center
+  align-items: center;
+  justify-content: center;
+  width: 150px;
 }
-
+  
 .avatar {
   cursor: pointer;
   width: 45px;
