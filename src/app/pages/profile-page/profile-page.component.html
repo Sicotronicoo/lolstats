@@ -5,22 +5,38 @@
             <button *ngIf="!formNewAccount" class="btn" (click)="isFormActive()">
                 ADD ACCOUNT
             </button>
-            <form *ngIf="formNewAccount && !urlImg" [formGroup]="form">
-                <input formControlName="summonerName" type="text texto-izquierda" placeholder="User">
+            <form *ngIf="formNewAccount && !urlImg" [formGroup]="form" class="form-verification">
+                <input class="input-summoner" formControlName="summonerName" placeholder="Summoner Name">
+                <p *ngIf="summonerError">The summoner's name does not exist</p>
                 <button *ngIf="formNewAccount" class="btn" (click)="setIdImgConfirmationLol()">
                     START VERIFICATION
                 </button>
             </form>
-            <div  *ngIf="urlImg !== ''">
+            <div  *ngIf="urlImg !== ''" class="verification">
                 <img height="80px" [src]="urlImg" alt="">
+                <p style="text-align: center;">Change your summoner icon to the one shown in the image. When you have changed it click on the "already" button. The icon shown should be at the bottom of the list of your icons.</p>
                 <button class="btn" (click)="confirmIdImgLolVerification()">
                     ALREADY
                 </button>
             </div>
-            
+        </div>
+        <div *ngFor="let account of accountsUser" class="account">
+                <img width="60" src="https://ddragon.leagueoflegends.com/cdn/13.5.1/img/profileicon/{{account.profileIconId}}.png" alt="">
+                <div class="details-account">
+                    <span style="text-align: right;">Lvl: {{account.summonerLevel}}</span>
+                    <span>{{account.name}}</span>
+                </div>
+                <div class="soloq">
+                    <span>{{account.divisions[0].rank}}</span>
+                    <span> {{account.divisions[0].leaguePoints}}</span>
+                </div>
+                <div class="flex">
+                    <span>{{account.divisions[1].rank}}</span>
+                    <span> {{account.divisions[1].leaguePoints}}</span>
+                </div>
+
+                <!-- <p>{{account.divisions[0].queueType}} {{account.divisions[0].tier}} {{account.divisions[0].rank}} {{account.divisions[0].leaguePoints}}</p>
+                <p>{{account.divisions[1].queueType}} {{account.divisions[1].tier}} {{account.divisions[1].rank}} {{account.divisions[1].leaguePoints}}</p> -->
         </div>
     </section>
-<!-- <p (click)="setIdImgConfirmationLol()">profile-page works!</p>
-<p (click)="confirmIdImgLolVerification()">Confirm account</p>
-<img *ngIf="idImgConfirmation !== ''" [src]="idImgConfirmation" alt=""> -->
 </div>

@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Functions, httpsCallableData } from '@angular/fire/functions';
-import { firstValueFrom } from 'rxjs';
-import { ApiLolService } from './api-lol.service';
+import { DocumentService } from './document.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +7,10 @@ import { ApiLolService } from './api-lol.service';
 export class UserService {
 
   constructor(
-    private lolService: ApiLolService,
-    private functions: Functions,
-
+    private documentService: DocumentService,
   ) { }
+
+  async listAccountsByUser(userId: string){
+    return await this.documentService.listP(`users/${userId}/accounts`); 
+  }
 }

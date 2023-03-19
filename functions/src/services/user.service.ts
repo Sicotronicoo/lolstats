@@ -27,7 +27,7 @@ export const getPlayerDivisionLol = async (summonerId: string) => {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }}).catch((err) => {
-    console.log(err.response);
+    return err.response.status;
   });
   if (infoDivisions) {
     return infoDivisions;
@@ -38,6 +38,9 @@ export const getPlayerDivisionLol = async (summonerId: string) => {
 
 export const createIdImgVerification = async (summonerName: string, userId: string) => {
   const player = await getPlayerLol(summonerName);
+  if (player === null) {
+    return null;
+  }
   const imgs = ["27", "10", "21", "28", "19", "24", "20", "22", "17", "14", "16", "13",
     "15", "6", "18", "11", "23", "26", "25", "12", "7", "9", "5", "4", "1",
     "3", "0", "2", "8"];
