@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { where } from 'firebase/firestore';
 import { DocumentService } from './document.service';
 
 @Injectable({
@@ -11,6 +12,12 @@ export class UserService {
   ) { }
 
   async listAccountsByUser(userId: string){
-    return await this.documentService.listP(`users/${userId}/accounts`); 
+    return await this.documentService.listP<any>(`users/${userId}/accounts`); 
+  }
+
+  async listAccountsByGame(userId: string){
+    return await this.documentService.listP<any>(`users/${userId}/accounts`, [where("game", "==", "league of legends")]); 
   }
 }
+
+

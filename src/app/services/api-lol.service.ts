@@ -61,17 +61,6 @@ export class ApiLolService {
       }
     }).pipe(retry(1), catchError(this.handleError));
   }
- 
-
-  test() {
-    return this.http.get<any>(
-      `https://ddragon.leagueoflegends.com/cdn/13.4.1/data/es_ES/profileicon.json`, {
-      headers: {
-        "Accept-Language": "en-US,en;q=0.7",
-      }
-    }).pipe(retry(1), catchError(this.handleError));
-  }
-
 
   getGameStats(idGame: string) {
     return this.http.get<any>(

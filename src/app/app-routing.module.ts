@@ -16,6 +16,11 @@ const routes: Routes = [
     path: 'profile',
     loadChildren: () => import('./pages/profile-page/profile-page.module').then(m => m.ProfilePageModule)
   },
+  {
+    ...canActivate(redirectUnauthorizedToLogin),
+    path: 'tournaments',
+    loadChildren: () => import('./pages/tournaments-page/tournaments-page.module').then(m => m.TournamentsPageModule)
+  },
 ];
 
 @NgModule({

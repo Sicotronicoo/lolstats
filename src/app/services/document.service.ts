@@ -89,7 +89,7 @@ export class DocumentService {
   create(path: string, data: Data): Promise<DocumentReference<DocumentData>>
   create(path: string, data: Data, transaction: Transaction): Transaction
   create(path: string, data: Data, transaction?: Transaction) {
-    try {
+    try {      
       const id = data["id"] ? data["id"] : this.createId(path);
       const dbData = {
         ...data,

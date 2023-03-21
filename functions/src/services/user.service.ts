@@ -4,7 +4,7 @@ import * as db from "../services/document.service";
 import * as functions from "firebase-functions";
 
 
-const apiKey = JSON.parse(process.env.API_KEY_LOL ? process.env.API_KEY_LOL : "{}");
+const apiKey = JSON.parse(process.env.API_LOL ? process.env.API_LOL : "{}");
 
 
 export const getPlayerLol = async (summonerName: string) => {
