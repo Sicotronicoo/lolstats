@@ -48,8 +48,6 @@ export class TournamentsPageComponent {
     await this.tournamentService.createTournament(tournament as Tournament);
   }
 
-
-
   async getAccounts(){
     const user = await firstValueFrom(this.authService.user);
     if (user) {
@@ -58,7 +56,7 @@ export class TournamentsPageComponent {
     return null;
   }
 
-  async inscribeInTournament(name: string){
+  async inscribeInTournament(){
     this.accounts= await this.getAccounts();    
     if(this.accounts !== null){
       this.inscription = true;

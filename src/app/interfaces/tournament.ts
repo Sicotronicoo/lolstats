@@ -4,6 +4,7 @@ export interface Tournament extends BaseDocument{
     game: string | null,
     startDate:  string,
     endDate: string,
+    category: string,
     name: string | null,
     award: string | null,
     public: boolean,

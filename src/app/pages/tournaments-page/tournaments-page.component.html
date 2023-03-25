@@ -1,4 +1,4 @@
-<p (click)="inscribeInTournament('any')">tournaments-page works!</p>
+<p (click)="inscribeInTournament()">tournaments-page works!</p>
 <div *ngIf="accounts">
     <select (change)="selectAccount($event)" name="select">
         <option *ngFor="let account of accounts" value="{{account.name}}">{{account.name}}</option>

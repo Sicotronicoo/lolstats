@@ -3,6 +3,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as db from "./services/document.service";
 import {confirmIdImgLolVerification, createIdImgVerification} from "./services/user.service";
+import {getDataGames} from "./services/tournament.service";
 
 admin.initializeApp();
 
@@ -54,6 +55,17 @@ export const confirmIdImgLol = functions.region("europe-west1")
     }
   });
 
+export const getDataGameTournamentsLol = functions.region("europe-west1")
+  .https.onCall(async (data, context) => {
+    try {
+      await getDataGames();
+      return;
+    } catch (e) {
+      functions.logger.error(e);
+      return;
+    }
+  });
+
 export const test = functions.region("europe-west1")
   .https.onCall(async (data, context) => {
     try {
@@ -64,3 +76,5 @@ export const test = functions.region("europe-west1")
       return;
     }
   });
+
+

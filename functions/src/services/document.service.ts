@@ -32,13 +32,21 @@ export const updateDoc = async (path: string, data: firestore.DocumentData): Pro
   return await db.collection(path).doc(data.id).update(dbData);
 };
 
-export const createSubcollection = async (path: string, idUser: string, data: firestore.DocumentData): Promise<firestore.DocumentReference<firestore.DocumentData>> => {
+export const createSubcollection = async (path: string, docId: string, data: firestore.DocumentData): Promise<firestore.DocumentReference<firestore.DocumentData>> => {
   const dbData = {
     ...data,
     updatedAt: FieldValue.serverTimestamp(),
   };
 
-  return await db.collection(path).doc(idUser).collection("accounts").add(dbData);
+  return await db.collection(path).doc(docId).collection("accounts").add(dbData);
+};
+
+export const createSubSubcollection = async (path: string, docId: string, subPath: string, subDocId: string, subSubPath: string, data: firestore.DocumentData): Promise<firestore.DocumentReference<firestore.DocumentData>> => {
+  const dbData = {
+    ...data,
+    updatedAt: FieldValue.serverTimestamp(),
+  };
+  return await db.collection(path).doc(docId).collection(subPath).doc(subDocId).collection(subSubPath).add(dbData);
 };
 
 export const deleteField = async (path: string, id: string, field: string) => {
