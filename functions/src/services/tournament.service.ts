@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import * as axios from "axios";
 import {createSubSubcollection} from "./document.service";
-/* import * as db from "../services/document.service";
-import * as functions from "firebase-functions"; */
+import * as db from "../services/document.service";
+/* import * as functions from "firebase-functions"; */
 
 const apiKey = JSON.parse(process.env.API_LOL ? process.env.API_LOL : "{}");
 
@@ -37,13 +37,27 @@ const getInfoGameLol = async (matchId: string) => {
 };
 
 
-export const getDataGames = async () => {
-  const listGamesId = await lastLolGamesPlayer("NEzMyDmOisZMnvdvllbPhw4WFmWUvHSgpfDLJdGC_zJWZ1Do5839pozl3Euj5A7T01b1yY2eq1DSww", 16546516, "ranked", 0, 1);
+export const getDataGames = async (path: string, docId: string, subPath: string, subDocId: string, subSubPath: string) => {
+  const timeStamp = await lastGameByPlayer(`/tournaments/${docId}/participants/${subDocId}`, docId, subDocId);
+  const listGamesId = await lastLolGamesPlayer(subDocId, timeStamp, "ranked", 0, 7);
   if (listGamesId) {
-    for (let i = 0; i < listGamesId.data.length; i++) {
+    for (let i = 0; i < listGamesId.data.reverse().length; i++) {
       const infoGame = await getInfoGameLol(listGamesId.data[i]);
-      await createSubSubcollection("tournaments", "UaCHNfDDtZhXh0vlDsbk", "participants", "NEzMyDmOisZMnvdvllbPhw4WFmWUvHSgpfDLJdGC_zJWZ1Do5839pozl3Euj5A7T01b1yY2eq1DSww", "games", infoGame?.data);
-      console.log(infoGame?.data);
+      await createSubSubcollection(path, docId, subPath, subDocId, subSubPath, infoGame?.data);
     }
   }
 };
+
+const lastGameByPlayer = async (path: string, tournamentId: string, puuid: string) => {
+  const timeStamp = await db.getLastDateGameLol(tournamentId, puuid);
+  if (timeStamp !== undefined) {
+    return timeStamp.data().info.gameEndTimestamp;
+  } else {
+    console.log("paso");
+    const timeStamp = await (await db.getDoc(path)).get("createdAt");
+    console.log(timeStamp._seconds);
+    return timeStamp._seconds;
+  }
+};
+
+

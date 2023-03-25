@@ -58,7 +58,8 @@ export const confirmIdImgLol = functions.region("europe-west1")
 export const getDataGameTournamentsLol = functions.region("europe-west1")
   .https.onCall(async (data, context) => {
     try {
-      await getDataGames();
+      // getDataGameTournamentsLol({""})
+      await getDataGames("tournaments", "UaCHNfDDtZhXh0vlDsbk", "participants", "NEzMyDmOisZMnvdvllbPhw4WFmWUvHSgpfDLJdGC_zJWZ1Do5839pozl3Euj5A7T01b1yY2eq1DSww", "games");
       return;
     } catch (e) {
       functions.logger.error(e);

@@ -15,14 +15,27 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AddStatsPageComponent {
 
   game!: Game;
-
+  idgames = [
+    "EUW1_6331178052",
+    "EUW1_6330959609",
+    "EUW1_6330618630",
+    "EUW1_6330608601",
+    "EUW1_6330589934",
+    "EUW1_6330568230",
+    "EUW1_6330553584"
+];
   constructor(
     private apiLol: ApiLolService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
 
   ) {
-
+    console.log(this.idgames.reverse());
+    
+    (async ()=> {
+      const dataGame = await firstValueFrom(this.apiLol.getGameStats(`EUW1_6330959609`)); 
+      console.log(dataGame);
+    })();
   }
 
   form = this.fb.group({
@@ -32,7 +45,7 @@ export class AddStatsPageComponent {
   async getGameStats() {
     console.log("Hola");
     
-   /*  const tes = await firstValueFrom(this.apiLol.getListGameIds("NEzMyDmOisZMnvdvllbPhw4WFmWUvHSgpfDLJdGC_zJWZ1Do5839pozl3Euj5A7T01b1yY2eq1DSww","RGAPI-edbc03ed-694b-44b3-9170-32675ae6f84f"));
+    /* const tes = await firstValueFrom(this.apiLol.getListGameIds("NEzMyDmOisZMnvdvllbPhw4WFmWUvHSgpfDLJdGC_zJWZ1Do5839pozl3Euj5A7T01b1yY2eq1DSww"));
     console.log(tes); */
     
     

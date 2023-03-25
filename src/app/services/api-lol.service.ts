@@ -64,7 +64,7 @@ export class ApiLolService {
 
   getGameStats(idGame: string) {
     return this.http.get<any>(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/${idGame}?api_key=${KEY}`, {
+      `https://europe.api.riotgames.com/lol/match/v5/matches/${idGame}?api_key=RGAPI-7e26b1dc-a02a-4fc0-aac5-3195a047ed52`, {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }
@@ -73,7 +73,7 @@ export class ApiLolService {
 
   getListGameIds(puuid: string) {
     return this.http.get(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${KEY}`, {
+      `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=RGAPI-7e26b1dc-a02a-4fc0-aac5-3195a047ed52`, {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }
