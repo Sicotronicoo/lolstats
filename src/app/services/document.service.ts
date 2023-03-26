@@ -77,7 +77,6 @@ export class DocumentService {
   get<T>(path: string, transaction?: Transaction) {
     try {
       const docRef = doc(this.db, path);
-
       return transaction ? transaction.get(docRef) : docData(docRef) as Observable<T>
     } catch (e) {
       this.error('Error al obtener el documento')

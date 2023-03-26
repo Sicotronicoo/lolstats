@@ -24,6 +24,15 @@ export class TournamentService {
     this.snackBar.open(`${player.name} registered for the tournament.`, 'close');
   }
 
+  getInfoTournament(idTournament: string) {
+    return this.documentService.get<Tournament>(`tournaments/${idTournament}`);
+  }
+
+  setPlayerIntournament(idTournament: string, data: string[]){
+    return this.documentService.set(`tournaments/`, {id: idTournament, players: data});
+  }
+
+
   async playerAlreadyRegistred(idTournament: string, idPlayer: string){
     const participant = await firstValueFrom(this.documentService.get<any>(`tournaments/${idTournament}/participants/${idPlayer}`));    
     if(participant){      

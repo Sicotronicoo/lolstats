@@ -73,8 +73,19 @@ export class TournamentsPageComponent {
       return account.name === this.accountForInscribe;
     });       
     const isAlreadyRegistred = await this.tournamentService.playerAlreadyRegistred(tournamentId, this.accounts[index].puuid);
+    const tournament = await firstValueFrom(this.tournamentService.getInfoTournament(tournamentId));    
     if(!isAlreadyRegistred) {
       await this.tournamentService.addPlayerInTournament(tournamentId, {id: this.accounts[index].puuid, name: this.accounts[index].name, games: null});
+      if (tournament.players === null){
+        let players: string[] = [this.accounts[index].puuid];
+        await this.tournamentService.setPlayerIntournament(tournamentId, players);
+      } else {
+        const tournament = await firstValueFrom(this.tournamentService.getInfoTournament(tournamentId));
+        if (tournament.players) {
+          let players: string[] = tournament.players;
+          await this.tournamentService.setPlayerIntournament(tournamentId, players);
+          }
+      }
     } else {
       this.snackBar.open(`${this.accounts[index].name} already registered for this tournament.`, 'close');
     }
