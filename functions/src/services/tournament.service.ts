@@ -1,13 +1,11 @@
 /* eslint-disable max-len */
 import * as axios from "axios";
-import {createSubSubcollection} from "./document.service";
 import * as db from "../services/document.service";
 /* import * as functions from "firebase-functions"; */
 
 const apiKey = JSON.parse(process.env.API_LOL ? process.env.API_LOL : "{}");
-
-const lastLolGamesPlayer = async (puuid: string, startDate?: EpochTimeStamp, type?: string, start?: number, count?: number) => {
-  const lastGames = await axios.default.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?startTime=${startDate}&type=${type}&start=${start}&count=${count}&api_key=${apiKey.key}`,
+const lastLolGamesPlayer = async (puuid: string, type?: string, startTime?: number, count?: number) => {
+  const lastGames = await axios.default.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?startTime=${startTime}&type=${type}&count=${count}&api_key=${apiKey.key}`,
     {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
@@ -37,26 +35,38 @@ const getInfoGameLol = async (matchId: string) => {
 };
 
 
-export const getDataGames = async (path: string, docId: string, subPath: string, subDocId: string, subSubPath: string) => {
-  const timeStamp = await lastGameByPlayer(`/tournaments/${docId}/participants/${subDocId}`, docId, subDocId);
-  const listGamesId = await lastLolGamesPlayer(subDocId, timeStamp, "ranked", 0, 7);
-  if (listGamesId) {
-    for (let i = 0; i < listGamesId.data.reverse().length; i++) {
-      const infoGame = await getInfoGameLol(listGamesId.data[i]);
-      await createSubSubcollection(path, docId, subPath, subDocId, subSubPath, infoGame?.data);
+export const getDataGames = async (path: string, docId: string) => {
+  const participants = await db.getDoc(`/tournaments/${docId}`);
+  const participantsList = await participants.get("players");
+  for (let i = 0; i < participantsList.length; i++) {
+    const participant = await db.getDoc(`/tournaments/${docId}/participants/${participantsList[i]}`);
+    const listIdGamesDb = participant.get("games");
+    const startTime = participant.get("updatedAt");
+    if (listIdGamesDb === null) {
+      const lastIdGames = await lastLolGamesPlayer(participantsList[i], "ranked", startTime._seconds, 5);
+      if (lastIdGames !== null) {
+        await db.updateDoc(`tournaments/${docId}/participants/`, {id: participantsList[i], games: [...lastIdGames.data]});
+        for (let j = 0; j < lastIdGames.data.length; j++) {
+          const infoGame = await getInfoGameLol(lastIdGames.data[j]);
+          await db.createSubSubcollection(path, docId, "participants", participantsList[i], "games", infoGame?.data);
+        }
+      }
+    } else {
+      const lastIdGames = await lastLolGamesPlayer(participantsList[i], "ranked", startTime._seconds, 5);
+      if (lastIdGames !== null && lastIdGames.data.length) {
+        const copyListGamesDbArray = [...listIdGamesDb];
+        for (let k = 0; k < lastIdGames.data.length; k++) {
+          const gameIdExists = copyListGamesDbArray.includes(lastIdGames.data[k]);
+          if (!gameIdExists) {
+            copyListGamesDbArray.push(lastIdGames.data[k]);
+            const infoGame = await getInfoGameLol(lastIdGames.data[k]);
+            await db.createSubSubcollection(path, docId, "participants", participantsList[i], "games", infoGame?.data);
+            await db.updateDoc(`tournaments/${docId}/participants/`, {id: participantsList[i], games: [...copyListGamesDbArray]});
+          }
+        }
+      }
+      await db.updateDoc(`tournaments/${docId}/participants/`, {id: participantsList[i]});
     }
-  }
-};
-
-const lastGameByPlayer = async (path: string, tournamentId: string, puuid: string) => {
-  const timeStamp = await db.getLastDateGameLol(tournamentId, puuid);
-  if (timeStamp !== undefined) {
-    return timeStamp.data().info.gameEndTimestamp;
-  } else {
-    console.log("paso");
-    const timeStamp = await (await db.getDoc(path)).get("createdAt");
-    console.log(timeStamp._seconds);
-    return timeStamp._seconds;
   }
 };
 

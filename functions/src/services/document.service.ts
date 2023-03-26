@@ -13,7 +13,7 @@ export const getCollection = (path: string) => {
 };
 
 export const getLastDateGameLol = async (tournamentId: string, puuid: string) => {
-  return (await db.collection(`/tournaments/${tournamentId}/participants/${puuid}/games`).orderBy("updatedAt", "desc").get()).docs[0];
+  return await db.collection(`/tournaments/${tournamentId}/participants/${puuid}/games`).orderBy("updatedAt", "desc").get();
 };
 
 /* export const getParticipantTournamentLol = async (tournamentId: string, puuid: string) => {
@@ -36,6 +36,16 @@ export const generateId = () => {
 
 
 export const updateDoc = async (path: string, data: firestore.DocumentData): Promise<firestore.WriteResult> => {
+  console.log(data);
+  const dbData = {
+    ...data,
+    updatedAt: FieldValue.serverTimestamp(),
+  };
+
+  return await db.collection(path).doc(data.id).update(dbData);
+};
+
+export const updateSubDoc = async (path: string, data: firestore.DocumentData): Promise<firestore.WriteResult> => {
   console.log(data);
   const dbData = {
     ...data,
