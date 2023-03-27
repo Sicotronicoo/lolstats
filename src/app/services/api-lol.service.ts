@@ -9,7 +9,7 @@ import { Player } from '../interfaces/player';
 import { DocumentService } from './document.service';
 
 
-const KEY = "RGAPI-ab0ac873-4259-4037-9c47-088dcd3ea520";
+const KEY = "RGAPI-7ede0923-84c1-461f-86d0-a941d4ca8336";
 
 
 @Injectable({
@@ -64,7 +64,7 @@ export class ApiLolService {
 
   getGameStats(idGame: string) {
     return this.http.get<any>(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/${idGame}?api_key=RGAPI-7e26b1dc-a02a-4fc0-aac5-3195a047ed52`, {
+      `https://europe.api.riotgames.com/lol/match/v5/matches/${idGame}?api_key=${KEY}`, {
       headers: {
         "Accept-Language": "en-US,en;q=0.7",
       }

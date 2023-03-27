@@ -7,6 +7,7 @@ import { UserService } from 'src/app/services/user.service';
 import { firstValueFrom } from 'rxjs';
 import { SelectionChange } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ApiLolService } from 'src/app/services/api-lol.service';
 
 @Component({
   selector: 'app-tournaments-page',
@@ -33,9 +34,14 @@ export class TournamentsPageComponent {
     private tournamentService: TournamentService,
     private userService: UserService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private apiLol: ApiLolService
   ) {
-
+   (async () => {
+    const gameInfo = await firstValueFrom(this.apiLol.getGameStats(`EUW1_6334869653`)); 
+    
+    
+   })()
   }
 
   async saveTournament(){
@@ -75,7 +81,7 @@ export class TournamentsPageComponent {
     const isAlreadyRegistred = await this.tournamentService.playerAlreadyRegistred(tournamentId, this.accounts[index].puuid);
     const tournament = await firstValueFrom(this.tournamentService.getInfoTournament(tournamentId));    
     if(!isAlreadyRegistred) {
-      await this.tournamentService.addPlayerInTournament(tournamentId, {id: this.accounts[index].puuid, name: this.accounts[index].name, games: null});
+      await this.tournamentService.addPlayerInTournament(tournamentId, {id: this.accounts[index].puuid, name: this.accounts[index].name, games: null, points: null});
       if (tournament.players === null){
         let players: string[] = [this.accounts[index].puuid];
         await this.tournamentService.setPlayerIntournament(tournamentId, players);
