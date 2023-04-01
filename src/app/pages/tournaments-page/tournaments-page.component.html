@@ -76,10 +76,21 @@
                     <div *ngFor="let participant of tournamentPlayers[0].participants" class="tournaments-participants">
                         <img width="50px" src="http://ddragon.leagueoflegends.com/cdn/13.6.1/img/profileicon/685.png"
                             alt="">
-                        <p> {{participant.name}} || </p>
-                        <p> {{participant.points}} || </p>
-                        <p> {{participant.wins}} || </p>
-                        <p> {{participant.losses}} ||</p>
+                        <div class="player-tournament">
+                            <p> {{participant.name}} </p>
+                        </div>
+                        <div class="participant-games">
+                            <p class="wins">W: {{participant.wins}} </p>
+                            <p class="losses">L: {{participant.losses}}</p>
+                        </div>
+                        <div class="participant-points">
+                            <p>Points</p>
+                            <p>{{participant.points}}</p>
+                        </div>
+                        <button class="btn-show-participants games">
+                            <span>GAMES</span>
+                            <i class="material-icons">add</i>
+                        </button>
                     </div>
                 </div>
             </div>

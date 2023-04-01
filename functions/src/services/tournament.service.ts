@@ -41,16 +41,16 @@ const generateGamePoints = async (gameInfo: any, puuid: string, tournamentId: st
   const participantInfo: any = playerGame.find((participant: any) => participant.puuid === puuid);
   const participant = await db.getDoc(`/tournaments/${tournamentId}/participants/${puuid}`);
   const dataForPoints: number[] = [
-    10,
+    20,
     participantInfo.kills,
     participantInfo.assists,
     participantInfo.tripleKills * 3,
     participantInfo.quadraKills * 4,
     participantInfo.pentaKills * 5,
-    participantInfo.win === true ? 30 : -10,
-    participantInfo.visionScore * 0.1,
+    participantInfo.win === true ? 30 : 0,
+    participantInfo.visionScore * 1.5,
     participantInfo.firstTowerKill === true ? 15 : 0,
-    participantInfo.totalDamageDealtToChampions * 0.0001,
+    // participantInfo.totalDamageDealtToChampions * 0.0001,
     participantInfo.gameEndedInEarlySurrender === true ? -10 : 0,
     participantInfo.gameEndedInSurrender === true ? -5 : 0,
   ];
@@ -67,7 +67,7 @@ const generateGamePoints = async (gameInfo: any, puuid: string, tournamentId: st
     const totalLosses = losses + 1;
     await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: puuid, losses: totalLosses});
   }
-  return points - (participantInfo.deaths * 2);
+  return points - (participantInfo.deaths * 1.5);
 };
 
 export const getDataGames = async (path: string, tournamentId: string) => {

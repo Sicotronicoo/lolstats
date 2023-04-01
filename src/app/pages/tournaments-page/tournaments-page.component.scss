@@ -87,7 +87,8 @@
     justify-content: space-evenly;
     align-items: center;
     cursor: pointer;
-    height: 70px;
+    height: 50px;
+    border: 0.5px solid #9f9898;
     width: auto;
     background-color: white;
     padding: 0 1em;
@@ -96,17 +97,58 @@
 .tournament-participants {
     display: flex;
     flex-direction: column;
-    align-items: center
+    align-items: center;
+}
+
+.participant-points {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    p {
+        margin: 0 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
 }
 
 .tournaments-participants  {
     display: flex;
     align-items: center;
+    justify-content: space-around;
     border: 1px solid rgb(173, 170, 170);
     width: 80%;
     height: 50px;
     margin: 0.5em 0;
     p {
         font-size: 20px;
+    }
+}
+
+.player-tournament {
+    min-width: 200px;
+}
+
+.games {
+    height: 40px;
+    span {
+        font-size: 13px;
+    }
+}
+.participant-games {
+    min-width: 60px;
+    p {
+        font-size: 20px;
+        font-weight: 600;
+    }
+    .wins {
+        text-align: left;
+        color: green;
+        margin: 0 0;
+    }
+    .losses {
+        text-align: right;
+        color: red;
+        margin: 0 0;
     }
 }
