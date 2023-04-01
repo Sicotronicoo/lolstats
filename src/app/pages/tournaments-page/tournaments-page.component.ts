@@ -6,7 +6,7 @@ import { DocumentService } from 'src/app/services/document.service';
 
 import { TournamentService } from 'src/app/services/tournament.service';
 import { UserService } from 'src/app/services/user.service';
-import { Observable, firstValueFrom, tap } from 'rxjs';
+import { Observable, firstValueFrom, tap, take } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiLolService } from 'src/app/services/api-lol.service';
 
@@ -23,6 +23,7 @@ export class TournamentsPageComponent {
   activeTournaments$!: Observable<Tournament[]>;
   activeTournaments: Tournament[] = [];
   tournamentPlayers: any[] = [];
+  tournamentPlayers$!: Observable<any[]>;
   showTournamentPlayers: boolean = false;
   newTournament: boolean = false;
   form = this.fb.group({
@@ -125,11 +126,21 @@ export class TournamentsPageComponent {
     if(index !== -1){
       this.showTournamentPlayers = false;
     } else {
-      this.tournamentPlayers.push({tournamentId: tournamentId, participants: await this.tournamentService.listPlayersTournament(tournamentId)});
+      this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
+        tap((games: any[]) => {
+          this.tournamentPlayers = [];
+          this.tournamentPlayers.push({tournamentId: tournamentId, participants: games});
+        })
+      )
     }
   } else {
+    this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
+      tap((games) => {                
+        this.tournamentPlayers = [];
+        this.tournamentPlayers.push({tournamentId: tournamentId, participants: games});
+      })
+    )
     this.showTournamentPlayers = true;
-    this.tournamentPlayers.push({tournamentId: tournamentId, participants: await this.tournamentService.listPlayersTournament(tournamentId)});
   }  
   console.log(this.tournamentPlayers);
 }

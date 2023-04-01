@@ -37,8 +37,8 @@ export class TournamentService {
     return this.documentService.update(`tournaments/`, {id: idTournament, players: data});
   }
 
-  async listPlayersTournament(tournamentId: string) {
-    return await firstValueFrom(this.documentService.list<any>(`tournaments/${tournamentId}/participants`));
+  listPlayersTournament(tournamentId: string) {
+    return this.documentService.list<any>(`tournaments/${tournamentId}/participants`);
   }
 
   async playerAlreadyRegistred(idTournament: string, idPlayer: string){
