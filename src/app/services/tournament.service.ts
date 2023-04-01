@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { Tournament } from '../interfaces/tournament';
 import { DocumentService } from './document.service';
+import { where } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,21 @@ export class TournamentService {
     this.snackBar.open(`${player.name} registered for the tournament.`, 'close');
   }
 
+  listActiveTournaments() {
+    return this.documentService.list<Tournament>("tournaments", [where("active", "==", true)]);
+  }
+
   getInfoTournament(idTournament: string) {
     return this.documentService.get<Tournament>(`tournaments/${idTournament}`);
   }
 
   setPlayerIntournament(idTournament: string, data: string[]){
-    return this.documentService.set(`tournaments/`, {id: idTournament, players: data});
+    return this.documentService.update(`tournaments/`, {id: idTournament, players: data});
   }
 
+  async listPlayersTournament(tournamentId: string) {
+    return await firstValueFrom(this.documentService.list<any>(`tournaments/${tournamentId}/participants`));
+  }
 
   async playerAlreadyRegistred(idTournament: string, idPlayer: string){
     const participant = await firstValueFrom(this.documentService.get<any>(`tournaments/${idTournament}/participants/${idPlayer}`));    

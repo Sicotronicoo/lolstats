@@ -1,7 +1,85 @@
-<p (click)="inscribeInTournament()">tournaments-page works!</p>
-<div *ngIf="accounts">
-    <select (change)="selectAccount($event)" name="select">
-        <option *ngFor="let account of accounts" value="{{account.name}}">{{account.name}}</option>
-    </select>
-    <button (click)="joinInTournament('UaCHNfDDtZhXh0vlDsbk')">JOIN</button>
+<div class="tournaments">
+    <div class="header-tournaments">
+        <p>TOURNAMENTS</p>
+        <div class="box-add-tournament" (click)="createTournament()">
+            <i class="material-icons">{{newTournament === true ? "remove" : "add"}}</i>
+        </div>
+    </div>
+    <div *ngIf="newTournament" class="new-tournament">
+        <form [formGroup]="form">
+            <div>
+                <label>GAME</label>
+                <input formControlName="game" type="string" placeholder="Select game of tournament">
+            </div>
+            <div>
+                <label>Tournament name</label>
+                <input formControlName="name" type="string" placeholder="Tournament Name">
+            </div>
+            <div>
+                <label>startDate</label>
+                <input formControlName="startDate" type="date" placeholder="Start date">
+            </div>
+            <div>
+                <label>endDate</label>
+                <input formControlName="endDate" type="date" placeholder="End date">
+            </div>
+            <div>
+                <label>award</label>
+                <input formControlName="award" type="string" placeholder="Award">
+            </div>
+            <div>
+                <label>Public</label>
+                <input formControlName="public" type="checkbox">
+            </div>
+            <button (click)="saveTournament()">SAVE</button>
+        </form>
+    </div>
+    <div *ngIf="activeTournaments$ | async" class="active-tournaments">
+        <div *ngFor="let tournament of activeTournaments" class="tournament">
+            <div class="tournament-container">
+                <img src="../../../assets/img/lol-ico.png" alt="" height="80px">
+                <div class="tournament-info">
+                    <div class="tournament-date">
+                        <p>Start date: {{tournament.startDate}}</p>
+                        <p>End date: {{tournament.endDate}}</p>
+                    </div>
+                    <p>{{tournament.name}}</p>
+                </div>
+                <div class="tournament-inscription">
+                    <p>Players registred: {{tournament.players !== null ? tournament.players.length : 0}}</p>
+                    <div *ngIf="accounts">
+                        <select (change)="selectAccount($event)" name="select">
+                            <option *ngFor="let account of accounts" value="{{account.name}}">{{account.name}}</option>
+                        </select>
+                        <button (click)="joinInTournament(tournament.id)">JOIN</button>
+                    </div>
+                </div>
+                <div class="awards">
+                    <h3>{{tournament.award}}</h3>
+                </div>
+                <div class="tournament-clasification">
+                    <button class="btn-show-participants">
+                        <span>INFO</span>
+                        <i class="material-icons">info</i>
+                    </button>
+                </div>
+                <div class="tournament-clasification">
+                    <button class="btn-show-participants" (click)="openRanking(tournament.id)">
+                        <span>Ranking</span>
+                        <i class="material-icons">trending_up</i>
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="showTournamentPlayers  && tournamentPlayers.length && tournamentPlayers[0].tournamentId === tournament.id"  class="tournament-participants">
+                <div *ngFor="let participant of tournamentPlayers[0].participants" class="tournaments-participants">
+                    <div>
+                        
+                    </div>
+                    <img width="50px" src="http://ddragon.leagueoflegends.com/cdn/13.6.1/img/profileicon/685.png" alt="">
+                    <p>{{participant.name}}</p>
+                    <p>{{participant.points}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

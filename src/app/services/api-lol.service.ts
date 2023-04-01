@@ -9,7 +9,7 @@ import { Player } from '../interfaces/player';
 import { DocumentService } from './document.service';
 
 
-const KEY = "RGAPI-7ede0923-84c1-461f-86d0-a941d4ca8336";
+const KEY = "RGAPI-bbdd2c4d-ad3d-43a6-88cf-a4bbefa3e2e0";
 
 
 @Injectable({
