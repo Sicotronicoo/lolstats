@@ -40,16 +40,15 @@ const generateGamePoints = (gameInfo: any, puuid: string, wins: number, losses: 
   const playerGame: string[] = [...gameInfo.info.participants];
   const participantInfo: any = playerGame.find((participant: any) => participant.puuid === puuid);
   const dataForPoints: number[] = [
-    20,
+    10,
     participantInfo.kills,
     participantInfo.assists,
     participantInfo.tripleKills * 3,
     participantInfo.quadraKills * 4,
     participantInfo.pentaKills * 5,
-    participantInfo.win === true ? 30 : 0,
+    participantInfo.win === true ? 15 : 0,
     participantInfo.visionScore * 1.5,
     participantInfo.firstTowerKill === true ? 15 : 0,
-    // participantInfo.totalDamageDealtToChampions * 0.0001,
     participantInfo.gameEndedInEarlySurrender === true ? -10 : 0,
     participantInfo.gameEndedInSurrender === true ? -5 : 0,
   ];
@@ -73,39 +72,44 @@ export const getDataGames = async (path: string, tournamentId: string) => {
     const participant = await db.getDoc(`/tournaments/${tournamentId}/participants/${participantsList[i]}`);
     const listIdGamesDb = participant.get("games");
     const startTime = participant.get("updatedAt");
-    const currentPoints = participant.get("points");
+    const pointsInDb = participant.get("points");
     const wins = participant.get("wins");
     const losses = participant.get("losses");
     if (listIdGamesDb === null) {
       const lastIdGames = await lastLolGamesPlayer(participantsList[i], "ranked", startTime._seconds, 5);
       if (lastIdGames !== null) {
-        // await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], games: [...lastIdGames.data]});
         const games: any[] = [];
+        let currentPoints = 0;
+        let currentWins = 0;
+        let currentLoss = 0;
         for (let j = 0; j < lastIdGames.data.length; j++) {
           games.push(lastIdGames.data[j]);
           const infoGame = await getInfoGameLol(lastIdGames.data[j]);
           await db.createSubSubcollection(path, tournamentId, "participants", participantsList[i], "games", infoGame?.data);
-          const points = generateGamePoints(infoGame?.data, participantsList[i], wins, losses);
-          await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points.points, wins: points.wins, losses: points.losses, games: games});
+          const points = generateGamePoints(infoGame?.data, participantsList[i], currentWins, currentLoss);
+          currentLoss = points.losses;
+          currentWins = points.wins;
+          currentPoints += points.points;
+          await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: currentPoints, wins: points.wins, losses: points.losses, games: games});
         }
       }
     } else {
       const lastIdGames = await lastLolGamesPlayer(participantsList[i], "ranked", startTime._seconds, 5);
       if (lastIdGames !== null && lastIdGames.data.length) {
         const copyListGamesDbArray = [...listIdGamesDb];
+        let totalPoints = pointsInDb;
+        let currentWins = wins;
+        let currentLoss = losses;
         for (let k = 0; k < lastIdGames.data.length; k++) {
           const gameIdExists = copyListGamesDbArray.includes(lastIdGames.data[k]);
           if (!gameIdExists) {
             copyListGamesDbArray.push(lastIdGames.data[k]);
             const infoGame = await getInfoGameLol(lastIdGames.data[k]);
-            const points = generateGamePoints(infoGame?.data, participantsList[i], wins, losses);
-            if (currentPoints === null) {
-              await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points.points, wins: points.wins, losses: points.losses, games: copyListGamesDbArray});
-            } else {
-              const totalPoints = points + currentPoints;
-              console.log("Currents points = " + totalPoints);
-              await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points.points, wins: points.wins, losses: points.losses, games: copyListGamesDbArray});
-            }
+            const points = generateGamePoints(infoGame?.data, participantsList[i], currentWins, currentLoss);
+            currentLoss = points.losses;
+            currentWins = points.wins;
+            totalPoints += points.points;
+            await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: totalPoints, wins: points.wins, losses: points.losses, games: copyListGamesDbArray});
             await db.createSubSubcollection(path, tournamentId, "participants", participantsList[i], "games", infoGame?.data);
           }
         }

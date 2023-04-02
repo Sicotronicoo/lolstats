@@ -97,9 +97,26 @@
 
                         <div *ngIf="playerGames$ | async">
                             <div
-                                *ngIf="showPlayerGames && playerGames.length && playerGames[0].tournamentId === tournament.id && playerGames[0].puuid === participant.id">
-                                <div *ngFor="let game of playerGames[0].games">
-                                    <p>{{game.info.gameId}}</p>
+                                *ngIf="showPlayerGames && playerGames.games.length && playerGames.tournamentId === tournament.id && playerGames.puuid === participant.id">
+                                <div *ngFor="let game of playerGames.games">
+                                    <p>championId: {{game.championId}}</p>
+                                    <p>champLevel: {{game.champLevel}}</p>
+                                    <p>champLevel: {{game.champLevel}}</p>
+                                    <p>deaths: {{game.deaths}}</p>
+                                    <p>goldEarned: {{game.goldEarned}}</p>
+                                    <p>lane: {{game.lane}}</p>
+                                    <p>item0: {{game.item0}}</p>
+                                    <p>item1: {{game.item1}}</p>
+                                    <p>item2: {{game.item2}}</p>
+                                    <p>item3: {{game.item3}}</p>
+                                    <p>item4: {{game.item4}}</p>
+                                    <p>item5: {{game.item5}}</p>
+                                    <p>item6: {{game.item6}}</p>
+                                    <p>assists: {{game.assists}}</p>
+                                    <p>teamId: {{game.teamId}}</p>
+                                    <p>totalDamageDealtToChampions: {{game.totalDamageDealtToChampions}}</p>
+                                    <p>win: {{game.win}}</p>
+                                    <p (click)="getDataInfo(playerGames.puuid)">test</p>
                                 </div>
                             </div>
                         </div>

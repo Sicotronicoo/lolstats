@@ -25,21 +25,21 @@ export class TournamentsPageComponent {
   tournamentPlayers: any[] = [];
   tournamentPlayers$!: Observable<any[]>;
   playerGames$!: Observable<any[]>;
-  playerGames: any[] = [];
+  playerGames: any;
   showTournamentPlayers: boolean = false;
   showPlayerGames: boolean = false;
   newTournament: boolean = false;
   form = this.fb.group({
     game: ['', [Validators.required]],
     name: ['', [Validators.required]],
-    startDate:  ['', [Validators.required]],
+    startDate: ['', [Validators.required]],
     endDate: ['', [Validators.required]],
     award: ['', [Validators.required]],
     public: [true, [Validators.required]],
     active: [true]
   });
 
-  constructor (
+  constructor(
     private fb: FormBuilder,
     private tournamentService: TournamentService,
     private userService: UserService,
@@ -48,22 +48,14 @@ export class TournamentsPageComponent {
     private apiLol: ApiLolService,
   ) {
     this.getTournaments();
-   /* (async () => {
-    const gameInfo = await firstValueFrom(this.apiLol.getGameStats(`EUW1_6334869653`)); 
-    console.log(gameInfo);
-    const tets = await firstValueFrom(this.documentService.list<any>("/tournaments/UaCHNfDDtZhXh0vlDsbk/participants"));
-    console.log(tets);
-    
-    
-   })() */
   }
 
-  async saveTournament(){
+  async saveTournament() {
     const tournament = {
       ...this.form.value,
       players: null,
       winner: null,
-      status: "open",    
+      status: "open",
     }
     await this.tournamentService.createTournament(tournament as Tournament);
     this.newTournament = false;
@@ -78,7 +70,7 @@ export class TournamentsPageComponent {
     this.accounts = await this.getAccounts()
   }
 
-  createTournament() {  
+  createTournament() {
     if (this.newTournament) {
       this.newTournament = false;
     } else {
@@ -86,7 +78,7 @@ export class TournamentsPageComponent {
     }
   }
 
-  async getAccounts(){
+  async getAccounts() {
     const user = await firstValueFrom(this.authService.user);
     if (user) {
       return await this.userService.listAccountsByGame(user.uid);
@@ -94,78 +86,92 @@ export class TournamentsPageComponent {
     return null;
   }
 
-  selectAccount(event: any) {        
-   this.accountForInscribe = event.target.value;
+  selectAccount(event: any) {
+    this.accountForInscribe = event.target.value;
   }
 
-  async joinInTournament(tournamentId: string){    
+  async joinInTournament(tournamentId: string) {
     const index = this.accounts.findIndex((account: any) => {
       return account.name === this.accountForInscribe;
-    });       
+    });
     const isAlreadyRegistred = await this.tournamentService.playerAlreadyRegistred(tournamentId, this.accounts[index].puuid);
-    const tournament = await firstValueFrom(this.tournamentService.getInfoTournament(tournamentId));    
-    if(!isAlreadyRegistred) {
-      await this.tournamentService.addPlayerInTournament(tournamentId, {id: this.accounts[index].puuid, name: this.accounts[index].name, games: null, points: null, wins: 0, losses: 0});
-      if (tournament.players === null){
+    const tournament = await firstValueFrom(this.tournamentService.getInfoTournament(tournamentId));
+    if (!isAlreadyRegistred) {
+      await this.tournamentService.addPlayerInTournament(tournamentId, { id: this.accounts[index].puuid, name: this.accounts[index].name, games: null, points: null, wins: 0, losses: 0 });
+      if (tournament.players === null) {
         let players: string[] = [this.accounts[index].puuid];
         await this.tournamentService.setPlayerIntournament(tournamentId, players);
       } else {
         const tournament = await firstValueFrom(this.tournamentService.getInfoTournament(tournamentId));
-        if (tournament.players) {          
+        if (tournament.players) {
           let players: string[] = tournament.players;
           players.push(this.accounts[index].puuid);
           await this.tournamentService.setPlayerIntournament(tournamentId, players);
-          }
+        }
       }
     } else {
       this.snackBar.open(`${this.accounts[index].name} already registered for this tournament.`, 'close');
     }
- }
+  }
 
- openRanking(tournamentId: string) {
-  if(this.showTournamentPlayers){
-    const index = this.tournamentPlayers.findIndex((tournament: any) => tournament.tournamentId === tournamentId);
-    this.tournamentPlayers = [];
-    if(index !== -1){
-      this.showTournamentPlayers = false;
+  openRanking(tournamentId: string) {
+    if (this.showTournamentPlayers) {
+      const index = this.tournamentPlayers.findIndex((tournament: any) => tournament.tournamentId === tournamentId);
+      this.tournamentPlayers = [];
+      if (index !== -1) {
+        this.showTournamentPlayers = false;
+      } else {
+        this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
+          tap((players: any[]) => {
+            this.tournamentPlayers = [{ tournamentId: tournamentId, participants: players }];
+          })
+        )
+      }
     } else {
       this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
-        tap((players: any[]) => {
-          this.tournamentPlayers = [{tournamentId: tournamentId, participants: players}];
+        tap((players) => {
+          this.tournamentPlayers = [{ tournamentId: tournamentId, participants: players }];
         })
       )
+      this.showTournamentPlayers = true;
     }
-  } else {
-    this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
-      tap((players) => {                
-        this.tournamentPlayers = [{tournamentId: tournamentId, participants: players}];
-      })
-    )
-    this.showTournamentPlayers = true;
-  }  
-}
+  }
 
-openGamesPlayer(tournamentId: string, puuid: string) {
-  if(this.showPlayerGames){
-    const index = this.playerGames.findIndex((playerGame: any) => playerGame.puuid === puuid);
-    this.playerGames = [];
-    if(index !== -1){
-      this.showPlayerGames = false;
+  openGamesPlayer(tournamentId: string, puuid: string) {
+    if (this.showPlayerGames) {
+      const index = this.playerGames.games.findIndex((playerGame: any) => playerGame.puuid === puuid);
+      this.playerGames = {};
+      if (index !== -1) {
+        this.showPlayerGames = false;
+      } else {
+        this.playerGames$ = this.tournamentService.listGamesPlayer(tournamentId, puuid).pipe(
+          tap((games: any[]) => {
+           let gamesInfo: any[] = [];
+            for (let i = 0; i < games.length; i++) {
+              const infoGamePlayer: any[] = games[i].info.participants;
+              const player = infoGamePlayer[infoGamePlayer.findIndex((participants: any) => participants.puuid === puuid)]
+              gamesInfo.push(player)
+            }
+            this.playerGames = { tournamentId: tournamentId, puuid: puuid, games: gamesInfo};
+          })
+        );
+      }
     } else {
       this.playerGames$ = this.tournamentService.listGamesPlayer(tournamentId, puuid).pipe(
         tap((games: any[]) => {
-          this.playerGames = [{tournamentId: tournamentId, puuid: puuid, games: games}]
+          let gamesInfo: any[] = [];
+          for (let i = 0; i < games.length; i++) {
+            const infoGamePlayer: any[] = games[i].info.participants;
+            const player = infoGamePlayer[infoGamePlayer.findIndex((participants: any) => participants.puuid === puuid)]
+            gamesInfo.push(player)
+          }
+          this.playerGames = { tournamentId: tournamentId, puuid: puuid, games: gamesInfo}
         })
       );
+      this.showPlayerGames = true;
     }
-  } else {
-    this.playerGames$ = this.tournamentService.listGamesPlayer(tournamentId, puuid).pipe(
-      tap((games: any[]) => {
-        this.playerGames = [{tournamentId: tournamentId, puuid: puuid, games: games}]
-      })
-    );
-    this.showPlayerGames = true;
-  }   
-}
-
+  }
+  getDataInfo(puuid: string) {
+    console.log(puuid);
+  }
 }
