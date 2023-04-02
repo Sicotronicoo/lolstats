@@ -59,7 +59,7 @@ export const getDataGameTournamentsLol = functions.region("europe-west1")
   .https.onCall(async (data, context) => {
     try {
       // getDataGameTournamentsLol({""})
-      await getDataGames("tournaments", "UaCHNfDDtZhXh0vlDsbk");
+      await getDataGames("tournaments", "YjmOMMvKUCHKF4a52OWh");
       return;
     } catch (e) {
       functions.logger.error(e);

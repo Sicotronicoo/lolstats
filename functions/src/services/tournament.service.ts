@@ -36,10 +36,9 @@ const getInfoGameLol = async (matchId: string) => {
   return null;
 };
 
-const generateGamePoints = async (gameInfo: any, puuid: string, tournamentId: string) => {
+const generateGamePoints = (gameInfo: any, puuid: string, wins: number, losses: number) => {
   const playerGame: string[] = [...gameInfo.info.participants];
   const participantInfo: any = playerGame.find((participant: any) => participant.puuid === puuid);
-  const participant = await db.getDoc(`/tournaments/${tournamentId}/participants/${puuid}`);
   const dataForPoints: number[] = [
     20,
     participantInfo.kills,
@@ -58,16 +57,13 @@ const generateGamePoints = async (gameInfo: any, puuid: string, tournamentId: st
   for (let i = 0; i < dataForPoints.length; i++) {
     points += dataForPoints[i];
   }
+  const dataPoints: any[] = [];
   if (participantInfo.win) {
-    const listIdGamesDb = participant.get("wins");
-    const wins = listIdGamesDb + 1;
-    await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: puuid, wins: wins});
+    dataPoints.push({wins: wins + 1, points: points - (participantInfo.deaths * 1.5), losses: losses});
   } else {
-    const losses = participant.get("losses");
-    const totalLosses = losses + 1;
-    await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: puuid, losses: totalLosses});
+    dataPoints.push({wins: wins, losses: losses + 1, points: points - (participantInfo.deaths * 1.5)});
   }
-  return points - (participantInfo.deaths * 1.5);
+  return {wins: dataPoints[0].wins, losses: dataPoints[0].losses, points: dataPoints[0].points};
 };
 
 export const getDataGames = async (path: string, tournamentId: string) => {
@@ -78,6 +74,8 @@ export const getDataGames = async (path: string, tournamentId: string) => {
     const listIdGamesDb = participant.get("games");
     const startTime = participant.get("updatedAt");
     const currentPoints = participant.get("points");
+    const wins = participant.get("wins");
+    const losses = participant.get("losses");
     if (listIdGamesDb === null) {
       const lastIdGames = await lastLolGamesPlayer(participantsList[i], "ranked", startTime._seconds, 5);
       if (lastIdGames !== null) {
@@ -85,8 +83,8 @@ export const getDataGames = async (path: string, tournamentId: string) => {
         for (let j = 0; j < lastIdGames.data.length; j++) {
           const infoGame = await getInfoGameLol(lastIdGames.data[j]);
           await db.createSubSubcollection(path, tournamentId, "participants", participantsList[i], "games", infoGame?.data);
-          const points = await generateGamePoints(infoGame?.data, participantsList[i], tournamentId);
-          await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points});
+          const points = generateGamePoints(infoGame?.data, participantsList[i], wins, losses);
+          await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points.points, wins: points.wins, losses: points.losses});
         }
       }
     } else {
@@ -98,13 +96,13 @@ export const getDataGames = async (path: string, tournamentId: string) => {
           if (!gameIdExists) {
             copyListGamesDbArray.push(lastIdGames.data[k]);
             const infoGame = await getInfoGameLol(lastIdGames.data[k]);
-            const points = await generateGamePoints(infoGame?.data, participantsList[i], tournamentId);
+            const points = generateGamePoints(infoGame?.data, participantsList[i], wins, losses);
             if (currentPoints === null) {
-              await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points});
+              await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points.points, wins: points.wins, losses: points.losses});
             } else {
               const totalPoints = points + currentPoints;
               console.log("Currents points = " + totalPoints);
-              await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: totalPoints});
+              await db.updateDoc(`tournaments/${tournamentId}/participants/`, {id: participantsList[i], points: points.points, wins: points.wins, losses: points.losses});
             }
             await db.createSubSubcollection(path, tournamentId, "participants", participantsList[i], "games", infoGame?.data);
           }
