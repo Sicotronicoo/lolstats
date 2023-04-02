@@ -40,6 +40,9 @@ export class TournamentService {
   listPlayersTournament(tournamentId: string) {
     return this.documentService.list<any>(`tournaments/${tournamentId}/participants`);
   }
+  listGamesPlayer(tournamentId: string, puuid: string) {
+    return this.documentService.list<any>(`tournaments/${tournamentId}/participants/${puuid}/games`);
+  }
 
   async playerAlreadyRegistred(idTournament: string, idPlayer: string){
     const participant = await firstValueFrom(this.documentService.get<any>(`tournaments/${idTournament}/participants/${idPlayer}`));    

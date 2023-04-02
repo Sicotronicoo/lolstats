@@ -74,23 +74,35 @@
                 <div *ngIf="showTournamentPlayers && tournamentPlayers.length && tournamentPlayers[0].tournamentId === tournament.id"
                     class="tournament-participants">
                     <div *ngFor="let participant of tournamentPlayers[0].participants" class="tournaments-participants">
-                        <img width="50px" src="http://ddragon.leagueoflegends.com/cdn/13.6.1/img/profileicon/685.png"
+                        <div class="game-header">
+                            <img width="50px" src="http://ddragon.leagueoflegends.com/cdn/13.6.1/img/profileicon/685.png"
                             alt="">
-                        <div class="player-tournament">
-                            <p> {{participant.name}} </p>
+                            <div class="player-tournament">
+                                <p> {{participant.name}} </p>
+                            </div>
+                            <div class="participant-games">
+                                <p class="wins">W: {{participant.wins ? participant.wins : 0}} </p>
+                                <p class="losses">L: {{participant.losses ? participant.losses : 0}}</p>
+                            </div>
+                            <div class="participant-points">
+                                <p>Points</p>
+                                <p>{{participant.points ? participant.points : 0}}</p>
+                            </div>
+                            <button class="btn-show-participants games"
+                                (click)="openGamesPlayer(tournament.id, participant.id)">
+                                <span>GAMES</span>
+                                <i class="material-icons">manage_search</i>
+                            </button>
                         </div>
-                        <div class="participant-games">
-                            <p class="wins">W: {{participant.wins}} </p>
-                            <p class="losses">L: {{participant.losses}}</p>
+
+                        <div *ngIf="playerGames$ | async">
+                            <div
+                                *ngIf="showPlayerGames && playerGames.length && playerGames[0].tournamentId === tournament.id && playerGames[0].puuid === participant.id">
+                                <div *ngFor="let game of playerGames[0].games">
+                                    <p>{{game.info.gameId}}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="participant-points">
-                            <p>Points</p>
-                            <p>{{participant.points}}</p>
-                        </div>
-                        <button class="btn-show-participants games">
-                            <span>GAMES</span>
-                            <i class="material-icons">add</i>
-                        </button>
                     </div>
                 </div>
             </div>

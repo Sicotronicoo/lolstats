@@ -6,7 +6,7 @@ import { DocumentService } from 'src/app/services/document.service';
 
 import { TournamentService } from 'src/app/services/tournament.service';
 import { UserService } from 'src/app/services/user.service';
-import { Observable, firstValueFrom, tap, take } from 'rxjs';
+import { Observable, firstValueFrom, tap, take, EMPTY } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiLolService } from 'src/app/services/api-lol.service';
 
@@ -24,7 +24,10 @@ export class TournamentsPageComponent {
   activeTournaments: Tournament[] = [];
   tournamentPlayers: any[] = [];
   tournamentPlayers$!: Observable<any[]>;
+  playerGames$!: Observable<any[]>;
+  playerGames: any[] = [];
   showTournamentPlayers: boolean = false;
+  showPlayerGames: boolean = false;
   newTournament: boolean = false;
   form = this.fb.group({
     game: ['', [Validators.required]],
@@ -119,7 +122,7 @@ export class TournamentsPageComponent {
     }
  }
 
- async openRanking(tournamentId: string) {
+ openRanking(tournamentId: string) {
   if(this.showTournamentPlayers){
     const index = this.tournamentPlayers.findIndex((tournament: any) => tournament.tournamentId === tournamentId);
     this.tournamentPlayers = [];
@@ -127,22 +130,42 @@ export class TournamentsPageComponent {
       this.showTournamentPlayers = false;
     } else {
       this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
-        tap((games: any[]) => {
-          this.tournamentPlayers = [];
-          this.tournamentPlayers.push({tournamentId: tournamentId, participants: games});
+        tap((players: any[]) => {
+          this.tournamentPlayers = [{tournamentId: tournamentId, participants: players}];
         })
       )
     }
   } else {
     this.tournamentPlayers$ = this.tournamentService.listPlayersTournament(tournamentId).pipe(
-      tap((games) => {                
-        this.tournamentPlayers = [];
-        this.tournamentPlayers.push({tournamentId: tournamentId, participants: games});
+      tap((players) => {                
+        this.tournamentPlayers = [{tournamentId: tournamentId, participants: players}];
       })
     )
     this.showTournamentPlayers = true;
   }  
-  console.log(this.tournamentPlayers);
+}
+
+openGamesPlayer(tournamentId: string, puuid: string) {
+  if(this.showPlayerGames){
+    const index = this.playerGames.findIndex((playerGame: any) => playerGame.puuid === puuid);
+    this.playerGames = [];
+    if(index !== -1){
+      this.showPlayerGames = false;
+    } else {
+      this.playerGames$ = this.tournamentService.listGamesPlayer(tournamentId, puuid).pipe(
+        tap((games: any[]) => {
+          this.playerGames = [{tournamentId: tournamentId, puuid: puuid, games: games}]
+        })
+      );
+    }
+  } else {
+    this.playerGames$ = this.tournamentService.listGamesPlayer(tournamentId, puuid).pipe(
+      tap((games: any[]) => {
+        this.playerGames = [{tournamentId: tournamentId, puuid: puuid, games: games}]
+      })
+    );
+    this.showPlayerGames = true;
+  }   
 }
 
 }
